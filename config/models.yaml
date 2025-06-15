@@ -1,0 +1,33 @@
+models:
+  small:
+    name: "qwen2.5:7b"
+    purpose: "routing, simple queries"
+    max_tokens: 4096
+    temperature: 0.7
+    
+  large:
+    name: "qwen2.5-coder:32b"
+    purpose: "complex coding tasks"
+    max_tokens: 32768
+    temperature: 0.1
+    
+  embedding:
+    name: "sentence-transformers/all-MiniLM-L6-v2"
+    device: "cpu"  # or "cuda" if you have GPU space
+
+ollama:
+  base_url: "http://localhost:11434"
+  timeout: 300
+  max_retries: 3
+
+# Additional models for testing
+additional_models:
+  llama4_16x17b:
+    name: "llama4:16x17b"
+    purpose: "testing, large language model"
+  qwen3_30b_a3b:
+    name: "qwen3:30b-a3b"
+    purpose: "testing, large language model"
+  qwen2_5_coder_32b:
+    name: "qwen2.5-coder:32b"
+    purpose: "testing, large coding model"
