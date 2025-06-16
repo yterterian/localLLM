@@ -476,17 +476,29 @@ router = ClineMemoryAwareRouter()
 @app.post("/v1/chat/completions")
 async def cline_memory_chat_completions(request: ClineRequest):
     """Cline memory bank optimized chat completions"""
-    
+
+    # Error handling: invalid model
+    if request.model not in router.models.values():
+        raise HTTPException(status_code=400, detail=f"Invalid model: {request.model}")
+
+    # Error handling: empty or malformed messages
+    if not request.messages or not any(msg.content.strip() for msg in request.messages):
+        raise HTTPException(status_code=400, detail="Empty or missing messages")
+
+    # Error handling: at least one user message required
+    if not any(msg.role == "user" and msg.content.strip() for msg in request.messages):
+        raise HTTPException(status_code=400, detail="No user message found in messages")
+
     start_time = datetime.now()
-    
+
     # Determine optimal model for this Cline request
     model_key, reasoning = router.determine_cline_model(request)
     selected_model = router.models[model_key]
-    
+
     try:
         result = await router.call_ollama_with_memory_context(model_key, request)
         duration = (datetime.now() - start_time).total_seconds()
-        
+
         # Enhanced response with Cline memory bank info
         response = {
             "id": f"cline-memory-{int(datetime.now().timestamp())}",
@@ -517,9 +529,9 @@ async def cline_memory_chat_completions(request: ClineRequest):
                 "memory_bank_files": list(router.memory_bank_cache.get(request.workspace_path, {}).keys())
             }
         }
-        
+
         return response
-        
+
     except Exception as e:
         logger.error("Cline memory request failed", error=str(e), workspace=request.workspace_path)
         raise
@@ -559,6 +571,30 @@ async def get_memory_bank_status(workspace_path: str):
             if f in memory_bank_content
         ],
         "clinerules_present": ".clinerules" in memory_bank_content
+    }
+
+@app.get("/v1/models")
+async def list_openai_models():
+    """
+    OpenAI-compatible endpoint for listing available models.
+    """
+    # OpenAI expects a list of models with id, object, created, owned_by, permission, etc.
+    # We'll provide a minimal compatible response.
+    import time
+    models = []
+    for key, model_name in router.models.items():
+        models.append({
+            "id": model_name,
+            "object": "model",
+            "created": int(time.time()),
+            "owned_by": "local-llm",
+            "permission": [],
+            "root": model_name,
+            "parent": None
+        })
+    return {
+        "object": "list",
+        "data": models
     }
 
 if __name__ == "__main__":
