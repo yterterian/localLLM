@@ -1,4 +1,13 @@
 #!/bin/bash
+# Ensure script runs from project root
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+if [[ "$PWD" != "$PROJECT_ROOT" ]]; then
+    echo "ERROR: Please run this script from the project root: $PROJECT_ROOT"
+    echo "Current directory: $PWD"
+    exit 1
+fi
+cd "$PROJECT_ROOT"
 set -e
 
 # Load environment
