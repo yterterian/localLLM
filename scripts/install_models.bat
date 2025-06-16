@@ -18,20 +18,21 @@ echo 🔄 Starting Ollama service...
 start "" /B ollama serve
 timeout /t 5 >nul
 
-REM Install models
-echo 📥 Downloading small model (qwen2.5:7b)...
-ollama pull qwen2.5:7b
+REM List of required models
+set MODELS=qwen2.5:7b qwen2.5-coder:32b llama4:16x17b qwen3:30b-a3b mxbai-embed-large
 
-echo 📥 Downloading large model (qwen2.5-coder:32b)...
-ollama pull qwen2.5-coder:32b
+for %%M in (%MODELS%) do (
+    ollama list | findstr /C:"%%M" >nul
+    if errorlevel 1 (
+        echo 📥 Model %%M not found. Installing...
+        ollama pull %%M
+    ) else (
+        echo 🔄 Model %%M already installed. Checking for updates...
+        ollama pull %%M
+    )
+)
 
-echo 📥 Downloading llama4:16x17b...
-ollama pull llama4:16x17b
-
-echo 📥 Downloading qwen3:30b-a3b...
-ollama pull qwen3:30b-a3b
-
-echo ✅ Models installed successfully!
+echo ✅ Models installed and up to date!
 
 REM Stop the background Ollama process
 taskkill /IM ollama.exe /F >nul 2>&1

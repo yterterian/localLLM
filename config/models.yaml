@@ -15,6 +15,16 @@ models:
     name: "sentence-transformers/all-MiniLM-L6-v2"
     device: "cpu"  # or "cuda" if you have GPU space
 
+  embedding_high_quality:
+    name: "mxbai-embed-large"
+    device: "cuda"  # Use GPU for best performance
+
+  multimodal:
+    name: "llama4:16x17b"
+    purpose: "memory analysis, architecture, planning"
+    max_tokens: 1048576
+    temperature: 0.2
+
 ollama:
   base_url: "http://localhost:11434"
   timeout: 300
