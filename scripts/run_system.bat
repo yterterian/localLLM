@@ -3,6 +3,9 @@ REM ==========================================
 REM Cline Local LLM System - Windows Launcher
 REM ==========================================
 
+REM Ensure working directory is project root (parent of scripts)
+cd /d "%~dp0.."
+
 REM Load environment variables from .env if present
 IF EXIST ..\.env (
     for /f "usebackq delims=" %%A in ("..\..env") do set "%%A"
@@ -10,32 +13,31 @@ IF EXIST ..\.env (
 
 echo 🚀 Starting Local LLM System...
 
-REM Start Ollama in background
-echo 🔄 Starting Ollama service...
-start "" /B ollama serve
-timeout /t 3 >nul
+REM Start Ollama in a new Command Prompt window
+echo 🔄 Starting Ollama service in a new window...
+start "Ollama" cmd /k "ollama serve"
 
-REM Start the router
-echo 🤖 Starting Cline Memory Bank Router...
-start "" /B python src\cline\memory_aware_router.py
+REM Start the router in a new Command Prompt window
+echo 🤖 Starting Cline Memory Bank Router in a new window...
+start "Cline Router" cmd /k "python src\cline\memory_aware_router.py"
 
-REM Start the context expansion server
-echo 🔍 Starting Context Expansion Server...
-start "" /B python src\integration\cline_server.py
+REM Start the context expansion server in a new Command Prompt window
+echo 🔍 Starting Context Expansion Server in a new window...
+start "Context Server" cmd /k "python src\integration\cline_server.py"
 
-echo ✅ System started successfully!
+REM Start Open WebUI in a new Command Prompt window
+echo 🌐 Starting Open WebUI in a new window...
+start "Open WebUI" cmd /k "set OPENAI_API_BASE_URL=http://localhost:8000/v1 && set OPENAI_API_KEY=dummy-key && open-webui serve --port 3000"
+
+echo ✅ All services started in separate windows!
 echo 📊 Router API: http://localhost:8000
 echo 🔍 Context API: http://localhost:8001
+echo 🌐 Open WebUI: http://localhost:3000
 echo 📖 API docs: http://localhost:8000/docs
 
 echo.
-echo Press any key to exit and terminate all background processes...
+echo Press any key to exit this launcher window. Services will keep running in their own windows.
 pause >nul
 
-REM Cleanup: kill all started processes (Ollama, router, context server)
-REM WARNING: This will kill all python and ollama processes!
-taskkill /IM python.exe /F >nul 2>&1
-taskkill /IM ollama.exe /F >nul 2>&1
-
-echo 🛑 Shutting down system...
+echo 🛑 Launcher window closed. To stop services, close their respective Command Prompt windows.
 exit /b

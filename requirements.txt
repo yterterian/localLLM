@@ -4,7 +4,7 @@ langchain-community==0.3.25
 fastapi==0.115.9
 uvicorn>=0.34.3
 pydantic>=2.11.7
-aiohttp>=3.12.13
+aiohttp==3.8.6
 requests>=2.32.4
 
 # Vector stores and embeddings
@@ -28,3 +28,4 @@ rich>=14.0.0
 # Monitoring and logging
 prometheus-client>=0.22.1
 structlog>=25.4.0
+open-webui

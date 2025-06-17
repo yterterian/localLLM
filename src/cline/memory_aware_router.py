@@ -465,10 +465,21 @@ class ClineMemoryAwareRouter:
                     raise HTTPException(status_code=response.status, detail=error_text)
 
 # FastAPI app optimized for Cline memory bank workflow
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     title="Cline Memory Bank Router",
     description="Intelligent routing optimized for Cline's memory bank workflow",
     version="3.0.0"
+)
+
+# Enable CORS for Open WebUI frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 router = ClineMemoryAwareRouter()
@@ -476,6 +487,23 @@ router = ClineMemoryAwareRouter()
 @app.post("/v1/chat/completions")
 async def cline_memory_chat_completions(request: ClineRequest):
     """Cline memory bank optimized chat completions"""
+
+    # --- Punctuation and smart quote normalization for user prompts ---
+    def normalize_punctuation(text: str) -> str:
+        # Replace smart quotes and unicode punctuation with ASCII equivalents
+        replacements = {
+            "“": '"', "”": '"', "‘": "'", "’": "'",
+            "«": '"', "»": '"', "„": '"', "‹": "'", "›": "'",
+            "′": "'", "″": '"', "‵": "'", "‶": '"',
+            "–": "-", "—": "-", "…": "...", "‐": "-",
+        }
+        for orig, repl in replacements.items():
+            text = text.replace(orig, repl)
+        return text
+
+    for msg in request.messages:
+        if isinstance(msg.content, str):
+            msg.content = normalize_punctuation(msg.content)
 
     # Error handling: invalid model
     if request.model not in router.models.values():

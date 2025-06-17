@@ -1,12 +1,20 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 venv/
+.venv/
 local-llm-env/
 .env
+.env.*
+
+# Build artifacts
+src/local_llm_system.egg-info/
+*.egg-info/
+pip-wheel-metadata/
 
 # Project specific
 vector_stores/
@@ -24,3 +32,7 @@ logs/
 # Data
 data/projects/
 temp/
+
+# Common temp/backup files
+*.bak
+*.tmp
