@@ -36,3 +36,4 @@ temp/
 # Common temp/backup files
 *.bak
 *.tmp
+.webui-venv/

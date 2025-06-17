@@ -1,5 +1,40 @@
 # Local LLM System
 
+## Python Virtual Environments
+
+This project uses two separate Python virtual environments to avoid dependency conflicts:
+
+- **Main Environment (.venv/):** For the Cline router system (Python 3.12+)
+- **WebUI Environment (.webui-venv/):** For Open-WebUI v0.6.15 (Python 3.11 required)
+
+### Creating the Environments
+
+#### Main Environment (.venv, Python 3.12+)
+Windows:
+```
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+```
+Unix/macOS:
+```
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
+
+#### WebUI Environment (.webui-venv, Python 3.11)
+Windows:
+```
+py -3.11 -m venv .webui-venv
+.webui-venv\Scripts\activate
+```
+Unix/macOS:
+```
+python3.11 -m venv .webui-venv
+source .webui-venv/bin/activate
+```
+
+Activate the appropriate environment before installing dependencies or running scripts for each component.
+
 This project provides a local LLM system with intelligent routing and context expansion.
 
 ## API Usage: Handling Punctuation and Special Characters in Prompts
