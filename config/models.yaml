@@ -25,6 +25,13 @@ models:
     max_tokens: 1048576
     temperature: 0.2
 
+  gooseai:
+    name: "gooseai/gpt-neo-20b"
+    purpose: "agentic work, external API"
+    max_tokens: 2048
+    temperature: 0.7
+    api_base_url: "${GOOSEAI_API_BASE_URL}"
+
 ollama:
   base_url: "http://localhost:11434"
   timeout: 300

@@ -19,15 +19,15 @@ start "Ollama" cmd /k "ollama serve"
 
 REM Start the router in a new Command Prompt window
 echo 🤖 Starting Cline Memory Bank Router in a new window...
-start "Cline Router" cmd /k "python src\cline\memory_aware_router.py"
+start "Cline Router" cmd /k "call .venv\Scripts\activate && python src\llm\memory_aware_router.py"
 
 REM Start the context expansion server in a new Command Prompt window
 echo 🔍 Starting Context Expansion Server in a new window...
-start "Context Server" cmd /k "python src\integration\cline_server.py"
+start "Context Server" cmd /k "call .venv\Scripts\activate && python src\integration\cline_server.py"
 
 REM Start Open WebUI in a new Command Prompt window
 echo 🌐 Starting Open WebUI in a new window...
-start "Open WebUI" cmd /k "set OPENAI_API_BASE_URL=http://localhost:8000/v1 && set OPENAI_API_KEY=dummy-key && open-webui serve --port 3000"
+start "Open WebUI" cmd /k "call .webui-venv\Scripts\activate && set OPENAI_API_BASE_URL=http://localhost:8000/v1 && set OPENAI_API_KEY=dummy-key && open-webui serve --host 0.0.0.0 --port 3000"
 
 echo ✅ All services started in separate windows!
 echo 📊 Router API: http://localhost:8000

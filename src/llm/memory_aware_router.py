@@ -606,20 +606,55 @@ async def list_openai_models():
     """
     OpenAI-compatible endpoint for listing available models.
     """
-    # OpenAI expects a list of models with id, object, created, owned_by, permission, etc.
-    # We'll provide a minimal compatible response.
+    # Aggregate all models from config: router.models, config['models'], and config['additional_models']
     import time
+    seen = set()
     models = []
+
+    # Add router.models (memory_fast, implementation, memory_analysis)
     for key, model_name in router.models.items():
-        models.append({
-            "id": model_name,
-            "object": "model",
-            "created": int(time.time()),
-            "owned_by": "local-llm",
-            "permission": [],
-            "root": model_name,
-            "parent": None
-        })
+        if model_name not in seen:
+            models.append({
+                "id": model_name,
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "local-llm",
+                "permission": [],
+                "root": model_name,
+                "parent": None
+            })
+            seen.add(model_name)
+
+    # Add all config['models'] entries
+    for model_key, model_cfg in router.config.get("models", {}).items():
+        name = model_cfg.get("name")
+        if name and name not in seen:
+            models.append({
+                "id": name,
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "local-llm",
+                "permission": [],
+                "root": name,
+                "parent": None
+            })
+            seen.add(name)
+
+    # Add all config['additional_models'] entries
+    for model_key, model_cfg in router.config.get("additional_models", {}).items():
+        name = model_cfg.get("name")
+        if name and name not in seen:
+            models.append({
+                "id": name,
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "local-llm",
+                "permission": [],
+                "root": name,
+                "parent": None
+            })
+            seen.add(name)
+
     return {
         "object": "list",
         "data": models
